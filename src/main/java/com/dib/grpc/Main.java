@@ -9,9 +9,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 public class Main {
     public static void main(String[] args) throws Throwable {
-        Class.forName("io.grpc.CallOptions");
-        Class.forName("io.grpc.examples.helloworld.GreeterGrpc");
-        Class.forName("io.grpc.examples.helloworld.GreeterGrpc$GreeterBlockingStub");
+         for (String classname : args) {
+            Class.forName(classname);
+         }
         return;
     }
 }

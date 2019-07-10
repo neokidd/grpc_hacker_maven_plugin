@@ -5,91 +5,79 @@ import java.util.List;
 
 import javassist.*;
 import javassist.bytecode.ClassFile;
-import javassist.bytecode.ConstPool;
 import javassist.bytecode.InnerClassesAttribute;
 
 public class MyTranslator implements Translator {
-    private ClassPool pool;
 
     public void start(ClassPool pool) throws NotFoundException, CannotCompileException {
-        this.pool = pool;
     }
 
     public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {
-        if ("io.grpc.examples.helloworld.GreeterGrpc".equals(classname)) {
-            CtClass cc = pool.get(classname);
-            ClassFile cf = cc.getClassFile();
-            cc.setModifiers(1);
-            // ConstPool cp = new ConstPool("io.grpc.examples.helloworld.GreeterGrpc");
-            ConstPool cp = cf.getConstPool();
-            List al = cf.getAttributes();
-            InnerClassesAttribute inner = (InnerClassesAttribute)al.get(1);
-            // InnerClassesAttribute inner = new InnerClassesAttribute(cp);
-            String ic = null;
-            int i = 0;
-            for (; i < inner.tableLength(); i++) {
-                ic = inner.innerClass(i);
-                if ("io.grpc.examples.helloworld.GreeterGrpc$GreeterBlockingStub".equals(ic)) {
-                    break;
+
+        for (String key : HackMojo.service2package.keySet()) {
+            String grpcClassName = HackMojo.service2package.get(key) + "." + key + "Grpc";
+            String stubClassName = grpcClassName + "$" + key +  "BlockingStub";
+            if (grpcClassName.equals(classname)) { 
+                CtClass cc = pool.get(classname);
+                ClassFile cf = cc.getClassFile();
+                cc.setModifiers(1);
+                List al = cf.getAttributes();
+                InnerClassesAttribute inner = null;
+                for (Object a : al) {
+                    if (a instanceof InnerClassesAttribute) {
+                        inner = (InnerClassesAttribute) a;
+                    }
+                }
+                String ic = null;
+                int i = 0;
+                for (; i < inner.tableLength(); i++) {
+                    ic = inner.innerClass(i);
+                    if (stubClassName.equals(ic)) {
+                        break;
+                    }
+                }
+
+                inner.setAccessFlags(i, 9);
+
+                try {
+                    cc.toBytecode();
+                    cc.writeFile(HackMojo.outputClassesDir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+
                 }
             }
 
-            inner.setAccessFlags(i, 9);
-            try {
-                cc.toBytecode();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            try {
-                // cc.writeFile(HackMojo.targetclasses);
-                cc.writeFile("target/classes/");
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        if ("io.grpc.examples.helloworld.GreeterGrpc$GreeterBlockingStub".equals(classname)) {
-            CtClass cc = pool.get(classname);
-            ClassFile cf = cc.getClassFile();
-            cc.setModifiers(9);
-            // cc.setModifiers(Modifier.PUBLIC | Modifier.);
-            // try {
-            //     cc.toBytecode();
-            // } catch (IOException e) {
-            //     // TODO Auto-generated catch block
-            //     e.printStackTrace();
-            // }
-            // ConstPool cp = new ConstPool("io.grpc.examples.helloworld.GreeterGrpc");
-            ConstPool cp = cf.getConstPool();
-            List al = cf.getAttributes();
-            InnerClassesAttribute inner = (InnerClassesAttribute) al.get(2);
-            // InnerClassesAttribute inner = new InnerClassesAttribute(cp);
-            String ic = null;
-            int i = 0;
-            for (; i < inner.tableLength(); i++) {
-                ic = inner.innerClass(i);
-                if ("io.grpc.examples.helloworld.GreeterGrpc$GreeterBlockingStub".equals(ic)) {
-                    break;
+            if (stubClassName.equals(classname)) {
+                CtClass cc = pool.get(classname);
+                ClassFile cf = cc.getClassFile();
+                cc.setModifiers(9);
+
+                List al = cf.getAttributes();
+                InnerClassesAttribute inner = null;
+                for (Object a : al) {
+                    if (a instanceof InnerClassesAttribute) {
+                        inner = (InnerClassesAttribute) a;
+                    }
+                }
+                String ic = null;
+                int i = 0;
+                for (; i < inner.tableLength(); i++) {
+                    ic = inner.innerClass(i);
+                    if (stubClassName.equals(ic)) {
+                        break;
+                    }
+                }
+
+                inner.setAccessFlags(i, 9);
+
+                try {
+                    cc.toBytecode();
+                    cc.writeFile(HackMojo.outputClassesDir);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            inner.setAccessFlags(i, 9);
-
-            try {
-                cc.toBytecode();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            try {
-                // cc.writeFile(HackMojo.targetclasses);
-                cc.writeFile("target/classes/");
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
-        
     }
 }
