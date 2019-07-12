@@ -11,9 +11,17 @@
   <packaging>maven-plugin</packaging>
 
   <name>hack-modifier-maven-plugin Maven Plugin</name>
-
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <description>This is part of work making GRPC extension for Alipay's SOFA Stack</description>
+  <url>https://github.com/neokidd/grpc_hacker_maven_plugin</url>
+  <developers>
+    <developer>
+      <name>Yanqiang Oliver Luan (neokidd)</name>
+      <email>yqluan@gmail.com</email>
+      <organization>DIB Group Inc.</organization>
+      <organizationUrl>https://github.com/neokidd</organizationUrl>
+      <timezone>UTC+08:00</timezone>
+    </developer>
+  </developers>
 
   <prerequisites>
     <maven>${maven.version}</maven>
