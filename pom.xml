@@ -7,7 +7,7 @@
 
   <groupId>com.github.neokidd.maven.plugins</groupId>
   <artifactId>hack-modifier-maven-plugin</artifactId>
-  <version>1.0</version>
+  <version>1.0.0</version>
   <packaging>maven-plugin</packaging>
 
   <name>hack-modifier-maven-plugin Maven Plugin</name>
@@ -22,6 +22,13 @@
       <timezone>UTC+08:00</timezone>
     </developer>
   </developers>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
   <prerequisites>
     <maven>${maven.version}</maven>
@@ -139,10 +146,10 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>2.5.3</version>
           <configuration>
-            <localCheckout>true</localCheckout>
-            <pushChanges>false</pushChanges>
-            <mavenExecutorId>forked-path</mavenExecutorId>
-            <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <useReleaseProfile>false</useReleaseProfile>
+            <releaseProfiles>release</releaseProfiles>
+            <goals>deploy</goals>
           </configuration>
           <dependencies>
             <dependency>
